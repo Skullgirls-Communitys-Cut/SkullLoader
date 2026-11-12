@@ -27,11 +27,11 @@ namespace PachingUtils {
         const unsigned char JMP = { 0xEB };
         unsigned char JMPValue{ NULL };
 
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x0011BE67), &JMPValue, 1, 0);
+        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x0011CD67), &JMPValue, 1, 0);
         if (JMPValue == NULL) {
             return false;
         }
-        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x0011BE67), &JMP, 1, NULL);
+        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x0011CD67), &JMP, 1, NULL);
         Console::DLL_WriteOutput("Breaking .gfs Validathion!");
         return true;
     }
@@ -41,11 +41,11 @@ namespace PachingUtils {
         unsigned char JMPValue{ NULL };
 
 
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x5C0F4), &JMPValue, 1, 0);
+        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x5C994), &JMPValue, 1, 0);
         if (JMPValue == NULL) {
             return false;
         }
-        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x5C0F4), &JMP, 1, NULL);
+        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x5C994), &JMP, 1, NULL);
         Console::DLL_WriteOutput("Breaking .sal Validathion!");
         return true;
     }
@@ -59,7 +59,7 @@ namespace PachingUtils {
             return false;
         }
 
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3e922c), &OldString, sizeof(OldString), 0);
+        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3f3878), &OldString, sizeof(OldString), 0);
         if (OldString == 0) {
             return false;
         }
@@ -68,13 +68,13 @@ namespace PachingUtils {
         VirtualProtectEx
         (
             ProcessHandle,
-            LPVOID(BaseAdress + 0x3e9000),
-            0x4B000,
+            LPVOID(BaseAdress + 0x3f3000),
+            0x4D000,
             PAGE_EXECUTE_READWRITE,
             &old
         );
 
-        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3e922c), &NewString, sizeof NewString, 0);
+        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3f3878), &NewString, sizeof NewString, 0);
 
         Console::DLL_WriteOutput("Change Data Directory");
         return true;
@@ -84,7 +84,7 @@ namespace PachingUtils {
         unsigned char OldString[sizeof NewString]{ NULL };
 
 
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3efe20), &OldString, sizeof(OldString), 0);
+        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3fac38), &OldString, sizeof(OldString), 0);
         if (OldString == 0) {
             return false;
         }
@@ -93,19 +93,19 @@ namespace PachingUtils {
         VirtualProtectEx
         (
             ProcessHandle,
-            LPVOID(BaseAdress + 0x3ef000),
-            0x45000,
+            LPVOID(BaseAdress + 0x3fa000),
+            0x46000,
             PAGE_EXECUTE_READWRITE,
             &old
         );
 
-        //WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3efe20), &NewString, sizeof NewString, 0);
+        //WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3fac38), &NewString, sizeof NewString, 0);
 
         VirtualProtectEx
         (
             ProcessHandle,
-            LPVOID(BaseAdress + 0x3ef000),
-            0x4B000,
+            LPVOID(BaseAdress + 0x3fa000),
+            0x46000,
             PAGE_READONLY,
             &old
         );
@@ -117,7 +117,7 @@ namespace PachingUtils {
         char OldString[sizeof(config::SAL_FILE_NAME)]{ NULL };
 
 
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3dbc7c), &OldString, sizeof(OldString), 0);
+        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3e60cc), &OldString, sizeof(OldString), 0);
         if (OldString == 0) {
             return false;
         }
@@ -126,19 +126,19 @@ namespace PachingUtils {
         VirtualProtectEx
         (
             ProcessHandle,
-            LPVOID(BaseAdress + 0x3db000),
-            0xE678,
+            LPVOID(BaseAdress + 0x3e6000),
+            0x1000,
             PAGE_EXECUTE_READWRITE,
             &old
         );
 
-        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3dbc7c), &config::SAL_FILE_NAME, sizeof config::SAL_FILE_NAME, 0);
+        WriteProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x3e60cc), &config::SAL_FILE_NAME, sizeof config::SAL_FILE_NAME, 0);
 
         VirtualProtectEx
         (
             ProcessHandle,
-            LPVOID(BaseAdress + 0x3db000),
-            0xE678,
+            LPVOID(BaseAdress + 0x3e6000),
+            0x1000,
             PAGE_READONLY,
             &old
         );
