@@ -14,7 +14,7 @@ namespace PachingUtils {
         int NewsAdress{};
 
 
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x00436E54), &NewsAdress, sizeof(NewsAdress), 0);
+        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x0085EEF0), &NewsAdress, sizeof(NewsAdress), 0);
         if (NewsAdress == 0) {
             return false;
         }
