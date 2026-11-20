@@ -95,7 +95,7 @@ bool HandleProcessAttach(HMODULE hModule) {
   \____|  \__,_|  \__|                                                                 
                               
 )");
-    Console::DLL_WriteOutput("\nAuthor: ImpDi\nVersion: DLL2\n");
+    Console::DLL_WriteOutput("\nAuthor: ImpDi\nVersion: DLL2.1\n");
     if (!fs::exists(main_paths::work_dir_path + "\\steam_appid.txt")) {
         if (!ParentProcessIs("steam.exe")) {
             Console::DLL_WriteOutput("We are not child of steam");
