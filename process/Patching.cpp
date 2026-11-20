@@ -1,5 +1,6 @@
 ﻿#include <Windows.h>
 #include <string>
+#include <cstring>
 #include <TlHelp32.h>
 #include <tchar.h>
 #include <iostream>
@@ -9,17 +10,39 @@
 
 
 namespace PachingUtils {
+    // Адрес игрового API лежит в глобальной std::string, заполненной ещё до загрузки
+    // модлоудера, поэтому правим саму строку. На 127.0.0.1 порт закрыт: отказ сразу.
     const bool NewsBreaker(const HANDLE& ThreadHande, const HANDLE& ProcessHandle, const DWORD BaseAdress) {
-        const unsigned char NewNewsString[] = "SG_is_Still_Alive";
-        int NewsAdress{};
+        const char OldPrefix[] = "https://skgm-prod-game-api";
+        const char NewUrl[] = "https://127.0.0.1";
+        const DWORD StringAdress = BaseAdress + 0x0085EEF0;
 
-
-        ReadProcessMemory(ProcessHandle, (LPVOID)(BaseAdress + 0x0085EEF0), &NewsAdress, sizeof(NewsAdress), 0);
-        if (NewsAdress == 0) {
+        DWORD Fields[6]{}; // буфер или указатель, длина (+0x10), ёмкость (+0x14)
+        if (!ReadProcessMemory(ProcessHandle, (LPCVOID)StringAdress, Fields, sizeof(Fields), NULL)) {
             return false;
         }
-        WriteProcessMemory(ProcessHandle, (LPVOID)(NewsAdress), (LPVOID)NewNewsString, sizeof NewNewsString, NULL);
-        std::cout << "Breaking News!\n" << std::endl;
+        const DWORD Capacity = Fields[5];
+        if (Capacity == 0) {
+            return false; // строка ещё не создана
+        }
+        const DWORD Buffer = Capacity < 16 ? StringAdress : Fields[0];
+
+        char Current[sizeof(OldPrefix)]{};
+        ReadProcessMemory(ProcessHandle, (LPCVOID)Buffer, Current, sizeof(Current) - 1, NULL);
+        if (strncmp(Current, NewUrl, sizeof(NewUrl) - 1) == 0) {
+            return true; // уже заменено при прошлом проходе
+        }
+        // Другая версия игры: не держим остальные патчи в цикле повторов.
+        if (strncmp(Current, OldPrefix, sizeof(OldPrefix) - 1) != 0 || Capacity < sizeof(NewUrl) - 1) {
+            Console::DLL_WriteOutput("Game API address not found, skipped");
+            return true;
+        }
+        const DWORD NewSize = sizeof(NewUrl) - 1;
+        if (!WriteProcessMemory(ProcessHandle, (LPVOID)Buffer, NewUrl, sizeof(NewUrl), NULL) ||
+            !WriteProcessMemory(ProcessHandle, (LPVOID)(StringAdress + 0x10), &NewSize, sizeof(NewSize), NULL)) {
+            return false;
+        }
+        Console::DLL_WriteOutput("Breaking News!");
         return true;
     }
     const bool GFSValidathionBreaker(const HANDLE& ThreadHande, const HANDLE& ProcessHandle, const DWORD BaseAdress) {
