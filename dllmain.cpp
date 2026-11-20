@@ -64,6 +64,10 @@ bool HandleProcessAttach(HMODULE hModule) {
     if (!ReadMainArgs()) {
         OutputDebugString("We can't read args!");
     };
+    // The Steam relaunch check runs before InitializePaths(), so set the game
+    // directory here. InitializePaths() will populate the remaining paths later.
+    main_paths::work_dir_path = fs::path(main_paths::exe_path).parent_path().string();
+
     if (config::LAUNCH_ORIGINAL_GAME) {
         Console::CleanupConsole();
         return TRUE;
